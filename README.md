@@ -426,6 +426,11 @@ biuro_podrozy/
 ✅ **Custom metody** i properties w modelach  
 ✅ **Dokumentacja inline** (docstrings, help_text)  
 
+## 📄 Inne dokumenty projektowe
+
+- **[DIAGRAM_RELACJI.md](biuro_podrozy/DIAGRAM_RELACJI.md)** - Diagram relacji między modelami w formacie ASCII
+- **[DANE_TESTOWE.md](biuro_podrozy/DANE_TESTOWE.md)** - Przykładowe dane testowe do wypełnienia systemu
+
 ## 👨‍💻 Autor
 
 Projekt stworzony jako backend Django dla systemu zarządzania biurem podróży.
