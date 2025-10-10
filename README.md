@@ -8,4 +8,4 @@ To repozytorium powstało na potrzeby przedmiotu `Aplikacje WWW` na studiach. Za
 
 |[ main ]|[ lab_n ]|[ projekt-końcowy ]
 |---|---|---|
-|Podstawowa gałąź, za wyjątkiem tego pliku `README.md` zawartość jest nieistotna|Zawartość rozwiązań do zadań w ramach laboratorium o numerze `n`|Implementacja projektu na zaliczenie przedmiotu|
+|Przedsionek pracy na innych gałęziach|Zawartość rozwiązań do zadań w ramach laboratorium o numerze `n`|Implementacja projektu na zaliczenie przedmiotu|
