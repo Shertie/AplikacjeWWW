@@ -3,6 +3,7 @@
 Backend Django dla systemu zarządzania biurem podróży z pełnym CRUD i panelem administracyjnym.
 
 ## 📋 Spis treści
+
 - [Opis projektu](#opis-projektu)
 - [Modele danych](#modele-danych)
 - [Relacje](#relacje)
@@ -14,6 +15,7 @@ Backend Django dla systemu zarządzania biurem podróży z pełnym CRUD i panele
 ## 🎯 Opis projektu
 
 System backendowy dla biura podróży umożliwiający kompleksowe zarządzanie:
+
 - Wycieczkami i ofertami
 - Rezerwacjami klientów
 - Lotami i liniami lotniczymi
@@ -25,36 +27,44 @@ System backendowy dla biura podróży umożliwiający kompleksowe zarządzanie:
 ## 📊 Modele danych
 
 ### 1. **Kraj** 🌍
+
 Reprezentuje kraje docelowe wycieczek.
 
 **Pola:**
+
 - `nazwa` - Nazwa kraju (unique)
 - `kod` - Kod ISO kraju (np. PL, FR) (unique)
 - `kontynent` - Nazwa kontynentu
 - `opis` - Opis kraju
 
 **Relacje:**
+
 - One-to-Many → Hotel
 - One-to-Many → Wycieczka
 - One-to-Many → Klient
 - One-to-Many → LiniaLotnicza
 
 ### 2. **LiniaLotnicza** ✈️
+
 Linie lotnicze obsługujące loty.
 
 **Pola:**
+
 - `nazwa` - Nazwa linii lotniczej
 - `kod_iata` - Kod IATA (np. LOT, LH) (unique)
 - `kraj_pochodzenia` - ForeignKey → Kraj
 - `strona_www` - URL strony internetowej
 
 **Relacje:**
+
 - One-to-Many → Lot
 
 ### 3. **Lot** 🛫
+
 Szczegóły lotów dla wycieczek.
 
 **Pola:**
+
 - `numer_lotu` - Numer lotu (unique)
 - `linia_lotnicza` - ForeignKey → LiniaLotnicza
 - `lotnisko_wylotu` - Nazwa lotniska wylotu
@@ -64,13 +74,16 @@ Szczegóły lotów dla wycieczek.
 - `czas_trwania` - Czas trwania lotu (DurationField)
 
 **Relacje:**
+
 - One-to-Many → Wycieczka (jako lot_tam)
 - One-to-Many → Wycieczka (jako lot_powrot)
 
 ### 4. **Hotel** 🏨
+
 Hotele dostępne w ofercie.
 
 **Pola:**
+
 - `nazwa` - Nazwa hotelu
 - `kraj` - ForeignKey → Kraj
 - `miasto` - Miasto
@@ -81,12 +94,15 @@ Hotele dostępne w ofercie.
 - `strona_www` - URL strony hotelu
 
 **Relacje:**
+
 - One-to-Many → Wycieczka
 
 ### 5. **Wycieczka** 🎒
+
 Główny model - oferowane wycieczki.
 
 **Pola:**
+
 - `nazwa` - Nazwa wycieczki
 - `opis` - Szczegółowy opis (TextField)
 - `kraj_docelowy` - ForeignKey → Kraj
@@ -106,16 +122,20 @@ Główny model - oferowane wycieczki.
 - `updated_at` - Data aktualizacji
 
 **Metody:**
+
 - `srednia_ocena` - Property obliczający średnią ocenę z opinii
 
 **Relacje:**
+
 - One-to-Many → Rezerwacja
 - One-to-Many → Opinia
 
 ### 6. **Klient** 👤
+
 Klienci biura podróży.
 
 **Pola:**
+
 - `user` - OneToOneField → User (optional, dla zalogowanych)
 - `imie` - Imię
 - `nazwisko` - Nazwisko
@@ -128,13 +148,16 @@ Klienci biura podróży.
 - `data_rejestracji` - Data rejestracji
 
 **Relacje:**
+
 - One-to-Many → Rezerwacja
 - One-to-Many → Opinia
 
 ### 7. **Rezerwacja** 📝
+
 Rezerwacje wycieczek przez klientów.
 
 **Pola:**
+
 - `klient` - ForeignKey → Klient
 - `wycieczka` - ForeignKey → Wycieczka
 - `status` - Status rezerwacji (OCZEKUJACA/POTWIERDZONA/OPLACONA/ANULOWANA/ZAKONCZONA)
@@ -149,15 +172,19 @@ Rezerwacje wycieczek przez klientów.
 - `uwagi` - Dodatkowe uwagi
 
 **Metody:**
+
 - `save()` - Nadpisana metoda automatycznie obliczająca pozostałą kwotę
 
 **Relacje:**
+
 - One-to-One → Opinia
 
 ### 8. **Opinia** ⭐
+
 Opinie i oceny wycieczek.
 
 **Pola:**
+
 - `wycieczka` - ForeignKey → Wycieczka
 - `klient` - ForeignKey → Klient
 - `rezerwacja` - OneToOneField → Rezerwacja (optional)
@@ -171,6 +198,7 @@ Opinie i oceny wycieczek.
 - `zweryfikowana` - Czy opinia jest zweryfikowana
 
 **Ograniczenia:**
+
 - `unique_together` - Jeden klient może dodać tylko jedną opinię do danej wycieczki
 
 ## 🔗 Relacje między modelami
@@ -202,6 +230,7 @@ Rezerwacja (1) ←→ (1) Opinia
 ### Panel Administracyjny (CRUD)
 
 Każdy model ma zaawansowaną konfigurację panelu admin z:
+
 - **Wyświetlaniem list** z kluczowymi informacjami
 - **Filtrami** według różnych kryteriów
 - **Wyszukiwaniem** pełnotekstowym
@@ -211,27 +240,31 @@ Każdy model ma zaawansowaną konfigurację panelu admin z:
 - **Obliczeniami** (średnia ocena, liczba rezerwacji, etc.)
 - **Custom actions** i metodami
 
-#### Szczególne funkcje:
+#### Szczególne funkcje
 
 **Wycieczka:**
+
 - Inline rezerwacji i opinii
 - Automatyczna średnia ocena
 - Status aktywności (aktywna/nieaktywna)
 - Pełne info o okresie i cenach
 
 **Rezerwacja:**
+
 - Kolorowy status rezerwacji
 - Automatyczne obliczanie pozostałej kwoty
 - Podświetlanie nieopłaconych rezerwacji
 - Szczegółowe informacje o uczestnikach
 
 **Opinia:**
+
 - System gwiazdek ⭐
 - Szczegółowe oceny (hotel/lot/obsługa)
 - Status weryfikacji
 - Ograniczenie: 1 opinia/klient/wycieczka
 
 **Hotel:**
+
 - Kategoria gwiazdkowa
 - Liczba dostępnych wycieczek
 - Pełne informacje kontaktowe
@@ -239,12 +272,14 @@ Każdy model ma zaawansowaną konfigurację panelu admin z:
 ## 🚀 Instalacja
 
 ### 1. Klonowanie repozytorium
+
 ```bash
 git clone <url-repozytorium>
 cd AplikacjeWWW/biuro_podrozy
 ```
 
 ### 2. Środowisko wirtualne
+
 ```bash
 # Z katalogu głównego projektu
 cd ..
@@ -255,50 +290,59 @@ venv\Scripts\activate  # Windows
 ```
 
 ### 3. Instalacja zależności
+
 ```bash
 pip install django
 ```
 
 ### 4. Migracje bazy danych
+
 ```bash
 cd biuro_podrozy
 python manage.py migrate
 ```
 
 ### 5. Utworzenie superusera
+
 ```bash
 python manage.py createsuperuser
 ```
 
 ### 6. Uruchomienie serwera
+
 ```bash
 python manage.py runserver
 ```
 
 ### 7. Dostęp do panelu administracyjnego
-Otwórz przeglądarkę: **http://127.0.0.1:8000/admin/**
+
+Otwórz przeglądarkę: **<http://127.0.0.1:8000/admin/>**
 
 ## 🎨 Panel Administracyjny
 
-### Funkcje CRUD dla każdego modelu:
+### Funkcje CRUD dla każdego modelu
 
 #### **Create (Tworzenie)**
+
 - Dodawanie nowych rekordów przez formularz
 - Walidacja danych po stronie backendu
 - Automatyczne generowanie timestamps
 
 #### **Read (Odczyt)**
+
 - Listy z filtrowaniem
 - Wyszukiwanie pełnotekstowe
 - Sortowanie wielokolumnowe
 - Szczegółowy widok pojedynczego rekordu
 
 #### **Update (Aktualizacja)**
+
 - Edycja istniejących rekordów
 - Inline editing dla powiązanych obiektów
 - Historia zmian (Django admin history)
 
 #### **Delete (Usuwanie)**
+
 - Usuwanie pojedynczych rekordów
 - Masowe usuwanie (bulk delete)
 - Ochrona przed kaskadowym usunięciem (gdzie skonfigurowane)
@@ -319,11 +363,13 @@ Po uruchomieniu możesz dodać przykładowe dane:
 ## 🔌 API REST (Opcjonalne)
 
 ### Instalacja Django REST Framework
+
 ```bash
 pip install djangorestframework
 ```
 
 ### Dodanie do INSTALLED_APPS
+
 ```python
 INSTALLED_APPS = [
     # ...
@@ -333,7 +379,9 @@ INSTALLED_APPS = [
 ```
 
 ### Utworzenie serializers i viewsets
+
 Możliwe rozszerzenie o pełne REST API z endpointami:
+
 - `/api/wycieczki/` - Lista i szczegóły wycieczek
 - `/api/rezerwacje/` - Zarządzanie rezerwacjami
 - `/api/opinie/` - Dodawanie i przeglądanie opinii

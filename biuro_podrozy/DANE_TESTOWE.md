@@ -5,12 +5,14 @@
 ### 1. Kraje (http://127.0.0.1:8000/admin/wycieczki/kraj/)
 
 ```
-Polska | PL | Europa
-Hiszpania | ES | Europa  
-Włochy | IT | Europa
-Grecja | GR | Europa
-Egipt | EG | Afryka
-Tajlandia | TH | Azja
+|Kraj|Skrót|Kontynent|
+|---|---|---|
+|Polska | PL | Europa|
+|Hiszpania | ES | Europa|
+|Włochy | IT | Europa|
+|Grecja | GR | Europa|
+|Egipt | EG | Afryka|
+|Tajlandia | TH | Azja|
 ```
 
 ### 2. Linie Lotnicze (http://127.0.0.1:8000/admin/wycieczki/linialotnicza/)

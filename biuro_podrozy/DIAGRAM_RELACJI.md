@@ -2,7 +2,7 @@
 
 ## Struktura bazy danych
 
-```
+```diagram
 ┌─────────────────────┐
 │       KRAJ          │
 ├─────────────────────┤
@@ -25,20 +25,20 @@
 │ • strona_www    │    │              │ • kategoria ⭐   │
 └─────────────────┘    │              │ • opis           │
                        ↓              │ • udogodnienia   │
-                ┌──────────────┐     │ • strona_www     │
-                │     LOT       │     │ • kraj ─────────→│
-                ├──────────────┤     └────┬─────────────┘
-                │ • numer_lotu │          │
-                │ • linia ─────│          │ 1:M
-                │ • lotnisko_↑ │          │
-                │ • lotnisko_↓ │          │
-                │ • data_↑     │          │
-                │ • data_↓     │          │
-                │ • czas_∆     │          │
-                └──────┬───────┘          │
-                       │                  │
-                       │ 1:M              │
-                       ├──────────────────┘
+                ┌──────────────┐      │ • strona_www     │
+                │     LOT      │      │ • kraj ─────────→│
+                ├──────────────┤      └────┬─────────────┘
+                │ • numer_lotu │           │
+                │ • linia ─────│           │ 1:M
+                │ • lotnisko_↑ │           │
+                │ • lotnisko_↓ │           │
+                │ • data_↑     │           │
+                │ • data_↓     │           │
+                │ • czas_∆     │           │
+                └──────┬───────┘           │
+                       │                   │
+                       │ 1:M               │
+                       ├────────────────── ┘
                        ↓
               ┌──────────────────────────────┐
               │        WYCIECZKA             │
@@ -52,7 +52,7 @@
               │ • data_rozpoczecia           │
               │ • data_zakonczenia           │
               │ • liczba_dni / nocy          │
-              │ • opcja_cenowa (S/P/L)      │
+              │ • opcja_cenowa (S/P/L)       │
               │ • cena_za_osobe              │
               │ • cena_dziecko               │
               │ • max_liczba_osob            │
@@ -64,23 +64,23 @@
                      │ 1:M
           ┌──────────┴───────────┐
           ↓                      ↓
-┌───────────────────┐    ┌─────────────────────┐
-│   REZERWACJA      │    │      OPINIA         │
-├───────────────────┤    ├─────────────────────┤
-│ • klient ────────→│    │ • wycieczka ───────→│
-│ • wycieczka ─────→│    │ • klient ──────────→│
-│ • status         │    │ • rezerwacja ───────→│
-│   ├ OCZEKUJACA   │    │ • ocena (1-5) ⭐     │
-│   ├ POTWIERDZONA │    │ • tytul              │
-│   ├ OPLACONA     │    │ • tresc              │
-│   ├ ANULOWANA    │    │ • ocena_hotelu       │
-│   └ ZAKONCZONA   │    │ • ocena_lotu         │
-│ • liczba_dorosłych│   │ • ocena_obslugi      │
-│ • liczba_dzieci   │   │ • data_dodania       │
-│ • cena_calkowita  │   │ • zweryfikowana      │
-│ • zaliczka        │   │ [unique: klient+     │
-│ • pozostalo_$     │   │  wycieczka]          │
-│ • data_rezerwacji │   └─────────────────────┘
+┌───────────────────┐    ┌──────────────────────┐
+│   REZERWACJA      │    │      OPINIA          │
+├───────────────────┤    ├──────────────────────┤
+│ • klient ────────→│    │ • wycieczka ────────→│
+│ • wycieczka ─────→│    │ • klient ───────────→│
+│ • status          │    │ • rezerwacja ───────→│
+│   ├ OCZEKUJACA    │    │ • ocena (1-5) ⭐     │
+│   ├ POTWIERDZONA  │    │ • tytul              │
+│   ├ OPLACONA      │    │ • tresc              │
+│   ├ ANULOWANA     │    │ • ocena_hotelu       │
+│   └ ZAKONCZONA    │    │ • ocena_lotu         │
+│ • liczba_dorosłych│    │ • ocena_obslugi      │
+│ • liczba_dzieci   │    │ • data_dodania       │
+│ • cena_calkowita  │    │ • zweryfikowana      │
+│ • zaliczka        │    │ [unique: klient+     │
+│ • pozostalo_$     │    │  wycieczka]          │
+│ • data_rezerwacji │    └─────────────────────┘
 │ • data_potwierdz. │            ↑
 │ • data_oplaty     │            │ 1:1
 │ • uwagi           │            │
@@ -90,18 +90,18 @@
         │ M:1                    │
         │                        │
 ┌───────┴────────────────────────┘
-│      KLIENT                    
-├────────────────────────────────
-│ • user (OneToOne → User)       
-│ • imie                         
-│ • nazwisko                     
-│ • email (unique)               
-│ • telefon                      
-│ • adres                        
-│ • kod_pocztowy                 
-│ • miasto                       
-│ • kraj ───────────────────────→ (KRAJ)
-│ • data_rejestracji             
+│      KLIENT                    |
+├────────────────────────────────|
+│ • user (OneToOne → User)       |
+│ • imie                         |
+│ • nazwisko                     |
+│ • email (unique)               |
+│ • telefon                      |
+│ • adres                        |
+│ • kod_pocztowy                 |
+│ • miasto                       |
+│ • kraj ───────────────────────→| (KRAJ)
+│ • data_rejestracji             |
 └────────────────────────────────
 
 
@@ -147,35 +147,54 @@ KLUCZOWE RELACJE:
 
 ## Przepływ danych - Przykład rezerwacji
 
-```
-1. KLIENT rejestruje się w systemie
-   ↓
-2. Przegląda dostępne WYCIECZKI
-   ↓
-3. Wybiera WYCIECZKĘ (która zawiera: KRAJ, HOTEL, LOTY)
-   ↓
-4. Tworzy REZERWACJĘ (status: OCZEKUJĄCA)
-   ↓
-5. Wpłaca zaliczkę → status: POTWIERDZONA
-   ↓
-6. Wpłaca resztę → status: OPLACONA
-   ↓
-7. Odbywa wycieczkę → status: ZAKOŃCZONA
-   ↓
-8. Dodaje OPINIĘ z oceną 1-5 ⭐
-   ↓
-9. Administrator weryfikuje opinię
-   ↓
-10. Opinia wpływa na średnią ocenę WYCIECZKI
+```mermaid
+graph TD
+    subgraph "Etap 1: Odkrywanie i Rezerwacja"
+        A[START] --> B[Przeglądanie dostępnych WYCIECZEK];
+        B --> C[Wybór konkretnej WYCIECZKI];
+        C --> D[Klient rejestruje się / loguje];
+        D --> E[Tworzenie REZERWACJI];
+        E --> F[Rezerwacja otrzymuje status: OCZEKUJĄCA];
+    end
+
+    subgraph "Etap 2: Płatność i Realizacja"
+        F -- "Wpłata zaliczki" --> G[Status: POTWIERDZONA];
+        G -- "Wpłata reszty kwoty" --> H[Status: OPŁACONA];
+        H -- "Termin wycieczki nadszedł" --> I[Odbycie wycieczki];
+        I -- "Wycieczka się zakończyła" --> J[Status: ZAKOŃCZONA];
+    end
+
+    subgraph "Etap 3: Opinia i Wpływ na Ofertę"
+        J --> K[Klient dodaje OPINIĘ z oceną 1-5 ⭐];
+        K --> L{Administrator weryfikuje opinię};
+        L -- "Akceptacja" --> M[Opinia zostaje opublikowana];
+        L -- "Odrzucenie" --> N[Opinia zostaje odrzucona];
+        M -- "Aktualizacja średniej oceny" --> C;
+    end
 ```
 
-## Możliwości rozbudowy (w przyszłości)
+```mermaid
+graph TD
+    subgraph "Etap 1: Odkrywanie i Rezerwacja"
+        A[START] --> B[Przeglądanie dostępnych WYCIECZEK];
+        B --> C[Wybór konkretnej WYCIECZKI];
+        C --> D[Klient rejestruje się / loguje];
+        D --> E[Tworzenie REZERWACJI];
+        E --> F[Rezerwacja otrzymuje status: OCZEKUJĄCA];
+    end
 
-- 📸 **Zdjęcia wycieczek** - galeria dla każdej wycieczki
-- 🏷️ **Kategorie wycieczek** - rodzinne, młodzieżowe, romantyczne
-- 📍 **Miejsca docelowe** - miasta/regiony w ramach wycieczki
-- 💳 **Płatności online** - integracja z systemem płatności
-- 📧 **Powiadomienia email** - potwierdzenia rezerwacji
-- 📱 **API mobilne** - aplikacja mobilna
-- 🎫 **Kody promocyjne** - system zniżek
-- 👥 **Program lojalnościowy** - punkty za rezerwacje
+    subgraph "Etap 2: Płatność i Realizacja"
+        F -- "Wpłata zaliczki" --> G[Status: POTWIERDZONA];
+        G -- "Wpłata reszty kwoty" --> H[Status: OPŁACONA];
+        H -- "Termin wycieczki nadszedł" --> I[Odbycie wycieczki];
+        I -- "Wycieczka się zakończyła" --> J[Status: ZAKOŃCZONA];
+    end
+
+    subgraph "Etap 3: Opinia i Wpływ na Ofertę"
+        J --> K[Klient dodaje OPINIĘ z oceną 1-5 ⭐];
+        K --> L{Administrator weryfikuje opinię};
+        L -- "Akceptacja" --> M[Opinia zostaje opublikowana];
+        L -- "Odrzucenie" --> N[Opinia zostaje odrzucona];
+        M -- "Aktualizacja średniej oceny" --> C;
+    end
+```
