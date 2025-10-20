@@ -18,6 +18,7 @@ staticfiles/
 venv/
 env/
 ENV/
+.venv/
 
 # IDE
 .vscode/
