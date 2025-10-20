@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Category(models.Model):
@@ -31,7 +32,38 @@ class Topic(models.Model):
     class Meta:
         verbose_name = "Topic"
         verbose_name_plural = "Topics"
-        ordering = ['-created_at']
+        ordering = ['title']
     
     def __str__(self):
         return self.title
+
+
+class Post(models.Model):
+    """Model posta na blogu."""
+    title = models.CharField(max_length=150)
+    text = models.TextField()
+    topic = models.ForeignKey(
+        Topic,
+        on_delete=models.CASCADE,
+        related_name='posts'
+    )
+    slug = models.SlugField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='posts'
+    )
+    
+    class Meta:
+        verbose_name = "Post"
+        verbose_name_plural = "Posts"
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        # Pierwsze 5 wyrazów tekstu posta + '...' jeżeli dłuższy
+        words = self.text.split()
+        if len(words) > 5:
+            return ' '.join(words[:5]) + '...'
+        return ' '.join(words)
