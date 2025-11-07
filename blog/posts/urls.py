@@ -1,7 +1,9 @@
 """
 URL configuration dla aplikacji posts.
+Zgodne z Django REST Framework Tutorial 3 - Class-based Views.
 """
 from django.urls import path
+from rest_framework.urlpatterns import format_suffix_patterns
 from posts import views
 
 app_name = 'posts'
@@ -22,3 +24,6 @@ urlpatterns = [
     path('posts/<int:pk>/', views.PostDetailView.as_view(), name='post-detail'),
     path('posts/search/', views.PostSearchView.as_view(), name='post-search'),
 ]
+
+# Dodanie obsługi format suffixes (.json, .api, etc.)
+urlpatterns = format_suffix_patterns(urlpatterns)

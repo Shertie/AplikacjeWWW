@@ -1,11 +1,12 @@
 """
 Widoki API dla aplikacji posts.
 Implementacja endpointów dla Category, Topic i Post.
+Bazowane na przykładach z Django REST Framework Tutorial 3.
 """
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.shortcuts import get_object_or_404
+from django.http import Http404
 from django.db.models import Q
 
 from posts.models import Category, Topic, Post
@@ -23,17 +24,16 @@ from posts.serializers import (
 
 class CategoryListView(APIView):
     """
-    GET: Wyświetlanie listy wszystkich kategorii.
-    POST: Dodawanie nowej kategorii.
+    List all categories, or create a new category.
     """
     
-    def get(self, request):
+    def get(self, request, format=None):
         """Pobierz wszystkie kategorie."""
         categories = Category.objects.all()
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
     
-    def post(self, request):
+    def post(self, request, format=None):
         """Utwórz nową kategorię."""
         serializer = CategorySerializer(data=request.data)
         if serializer.is_valid():
@@ -44,29 +44,36 @@ class CategoryListView(APIView):
 
 class CategoryDetailView(APIView):
     """
-    GET: Wyświetlanie pojedynczej kategorii.
-    PUT: Aktualizacja kategorii.
-    DELETE: Usuwanie kategorii.
+    Retrieve, update or delete a category instance.
     """
     
-    def get(self, request, pk):
-        """Pobierz kategorię o podanym ID."""
-        category = get_object_or_404(Category, pk=pk)
+    def get_object(self, pk):
+        """
+        Pobierz kategorię o podanym ID lub zwróć Http404.
+        """
+        try:
+            return Category.objects.get(pk=pk)
+        except Category.DoesNotExist:
+            raise Http404
+    
+    def get(self, request, pk, format=None):
+        """Pobierz kategorię."""
+        category = self.get_object(pk)
         serializer = CategorySerializer(category)
         return Response(serializer.data)
     
-    def put(self, request, pk):
+    def put(self, request, pk, format=None):
         """Zaktualizuj kategorię."""
-        category = get_object_or_404(Category, pk=pk)
+        category = self.get_object(pk)
         serializer = CategorySerializer(category, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def delete(self, request, pk):
+    def delete(self, request, pk, format=None):
         """Usuń kategorię."""
-        category = get_object_or_404(Category, pk=pk)
+        category = self.get_object(pk)
         category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -100,17 +107,16 @@ class CategorySearchView(APIView):
 
 class TopicListView(APIView):
     """
-    GET: Wyświetlanie listy wszystkich tematów.
-    POST: Dodawanie nowego tematu.
+    List all topics, or create a new topic.
     """
     
-    def get(self, request):
+    def get(self, request, format=None):
         """Pobierz wszystkie tematy."""
         topics = Topic.objects.select_related('category').all()
         serializer = TopicSerializer(topics, many=True)
         return Response(serializer.data)
     
-    def post(self, request):
+    def post(self, request, format=None):
         """Utwórz nowy temat."""
         serializer = TopicSerializer(data=request.data)
         if serializer.is_valid():
@@ -121,29 +127,36 @@ class TopicListView(APIView):
 
 class TopicDetailView(APIView):
     """
-    GET: Wyświetlanie pojedynczego tematu.
-    PUT: Aktualizacja tematu.
-    DELETE: Usuwanie tematu.
+    Retrieve, update or delete a topic instance.
     """
     
-    def get(self, request, pk):
-        """Pobierz temat o podanym ID."""
-        topic = get_object_or_404(Topic.objects.select_related('category'), pk=pk)
+    def get_object(self, pk):
+        """
+        Pobierz temat o podanym ID lub zwróć Http404.
+        """
+        try:
+            return Topic.objects.select_related('category').get(pk=pk)
+        except Topic.DoesNotExist:
+            raise Http404
+    
+    def get(self, request, pk, format=None):
+        """Pobierz temat."""
+        topic = self.get_object(pk)
         serializer = TopicSerializer(topic)
         return Response(serializer.data)
     
-    def put(self, request, pk):
+    def put(self, request, pk, format=None):
         """Zaktualizuj temat."""
-        topic = get_object_or_404(Topic, pk=pk)
+        topic = self.get_object(pk)
         serializer = TopicSerializer(topic, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def delete(self, request, pk):
+    def delete(self, request, pk, format=None):
         """Usuń temat."""
-        topic = get_object_or_404(Topic, pk=pk)
+        topic = self.get_object(pk)
         topic.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -178,17 +191,16 @@ class TopicSearchView(APIView):
 
 class PostListView(APIView):
     """
-    GET: Wyświetlanie listy wszystkich postów.
-    POST: Dodawanie nowego posta.
+    List all posts, or create a new post.
     """
     
-    def get(self, request):
+    def get(self, request, format=None):
         """Pobierz wszystkie posty."""
         posts = Post.objects.select_related('topic', 'topic__category', 'created_by').all()
         serializer = PostListSerializer(posts, many=True)
         return Response(serializer.data)
     
-    def post(self, request):
+    def post(self, request, format=None):
         """Utwórz nowy post."""
         serializer = PostSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
@@ -199,32 +211,38 @@ class PostListView(APIView):
 
 class PostDetailView(APIView):
     """
-    GET: Wyświetlanie pojedynczego posta.
-    PUT: Aktualizacja posta.
-    DELETE: Usuwanie posta.
+    Retrieve, update or delete a post instance.
     """
     
-    def get(self, request, pk):
-        """Pobierz post o podanym ID."""
-        post = get_object_or_404(
-            Post.objects.select_related('topic', 'topic__category', 'created_by'), 
-            pk=pk
-        )
+    def get_object(self, pk):
+        """
+        Pobierz post o podanym ID lub zwróć Http404.
+        """
+        try:
+            return Post.objects.select_related(
+                'topic', 'topic__category', 'created_by'
+            ).get(pk=pk)
+        except Post.DoesNotExist:
+            raise Http404
+    
+    def get(self, request, pk, format=None):
+        """Pobierz post."""
+        post = self.get_object(pk)
         serializer = PostSerializer(post)
         return Response(serializer.data)
     
-    def put(self, request, pk):
+    def put(self, request, pk, format=None):
         """Zaktualizuj post."""
-        post = get_object_or_404(Post, pk=pk)
+        post = self.get_object(pk)
         serializer = PostSerializer(post, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def delete(self, request, pk):
+    def delete(self, request, pk, format=None):
         """Usuń post."""
-        post = get_object_or_404(Post, pk=pk)
+        post = self.get_object(pk)
         post.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
