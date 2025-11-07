@@ -24,11 +24,13 @@ AplikacjeWWW/
 ## Modele
 
 ### Category
+
 - `name` (CharField) - Nazwa kategorii (unikalna)
 - `description` (TextField) - Opis kategorii
 - `created_at` (DateTimeField) - Data utworzenia
 
 ### Topic
+
 - `title` (CharField) - Tytuł tematu
 - `content` (TextField) - Treść tematu
 - `category` (ForeignKey) - Powiązanie z kategorią
@@ -38,49 +40,57 @@ AplikacjeWWW/
 ## Instalacja
 
 1. Sklonuj repozytorium:
-```bash
-git clone <url-repozytorium>
-cd AplikacjeWWW
-```
+
+   ```bash
+   git clone <url-repozytorium>
+   cd AplikacjeWWW
+   ```
 
 2. Utwórz i aktywuj środowisko wirtualne:
-```bash
-python3 -m venv venv
-source venv/bin/activate  # Linux/Mac
-# lub
-venv\Scripts\activate  # Windows
-```
+
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # Linux/Mac
+   # lub
+   venv\Scripts\activate  # Windows
+   ```
 
 3. Zainstaluj zależności:
-```bash
-pip install django django-debug-toolbar
-```
+
+   ```bash
+   pip install django django-debug-toolbar
+   ```
 
 4. Przejdź do katalogu projektu i wykonaj migracje:
-```bash
-cd blog
-python manage.py migrate
-```
+
+   ```bash
+   cd blog
+   python manage.py migrate
+   ```
 
 5. Utwórz superusera:
-```bash
-python manage.py createsuperuser
-```
+
+   ```bash
+   python manage.py createsuperuser
+   ```
 
 6. Uruchom serwer deweloperski:
-```bash
-python manage.py runserver
-```
+
+   ```bash
+   python manage.py runserver
+   ```
 
 7. Otwórz przeglądarkę i przejdź do:
-- Panel administracyjny: http://127.0.0.1:8000/admin/
-- Aplikacja: http://127.0.0.1:8000/
+
+- Panel administracyjny: <http://127.0.0.1:8000/admin/>
+- Aplikacja: <http://127.0.0.1:8000/>
 
 ## Django Debug Toolbar
 
 Projekt ma zainstalowany i skonfigurowany `django-debug-toolbar`. Toolbar pojawia się automatycznie na stronach gdy `DEBUG=True`.
 
-### Funkcje Debug Toolbar:
+### Funkcje Debug Toolbar
+
 - Historia zapytań SQL
 - Informacje o cache
 - Czasy renderowania szablonów
@@ -100,6 +110,7 @@ Projekt ma zainstalowany i skonfigurowany `django-debug-toolbar`. Toolbar pojawi
 ## Użyteczne komendy
 
 ### Migracje
+
 ```bash
 # Tworzenie migracji
 python manage.py makemigrations
@@ -115,12 +126,14 @@ python manage.py migrate <app_name> <migration_name>
 ```
 
 ### Panel administracyjny
+
 ```bash
 # Tworzenie superusera
 python manage.py createsuperuser
 ```
 
 ### Serwer deweloperski
+
 ```bash
 # Uruchamianie serwera
 python manage.py runserver
