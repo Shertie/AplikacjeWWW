@@ -1,6 +1,7 @@
 """
 URL configuration dla aplikacji posts.
 Zgodne z Django REST Framework Tutorial 3 - Class-based Views.
+Lab 6 - Autentykacja i uprawnienia.
 """
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
@@ -23,6 +24,20 @@ urlpatterns = [
     path('posts/', views.PostListView.as_view(), name='post-list'),
     path('posts/<int:pk>/', views.PostDetailView.as_view(), name='post-detail'),
     path('posts/search/', views.PostSearchView.as_view(), name='post-search'),
+    
+    # ========================================================================
+    # LAB 6 - Authenticated endpoints
+    # ========================================================================
+    
+    # Zadanie 2: Posty aktualnie zalogowanego użytkownika
+    path('users/posts/', views.user_posts_list, name='user-posts'),
+    
+    # Zadanie 4: Osobne endpointy dla PUT i DELETE z różnymi metodami autentykacji
+    path('posts/update/<int:pk>/', views.post_update, name='post-update'),
+    path('posts/delete/<int:pk>/', views.post_delete, name='post-delete'),
+    
+    # Zadanie 5: Tematy dla danej kategorii (tylko token auth)
+    path('categories/<int:category_id>/topics/', views.category_topics_list, name='category-topics'),
 ]
 
 # Dodanie obsługi format suffixes (.json, .api, etc.)

@@ -2,10 +2,14 @@
 Widoki API dla aplikacji posts.
 Implementacja endpointów dla Category, Topic i Post.
 Bazowane na przykładach z Django REST Framework Tutorial 3.
+Lab 6 - Autentykacja i uprawnienia.
 """
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
 from django.db.models import Q
 
@@ -272,3 +276,100 @@ class PostSearchView(APIView):
         
         serializer = PostListSerializer(posts, many=True)
         return Response(serializer.data)
+
+
+# ============================================================================
+# AUTHENTICATED USER VIEWS (LAB 6 - ZADANIE 2)
+# ============================================================================
+
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def user_posts_list(request):
+    """
+    Zwraca listę postów utworzonych przez aktualnie zalogowanego użytkownika.
+    Wymaga uwierzytelnienia (IsAuthenticated).
+    
+    Endpoint: /api/users/posts/
+    """
+    # Filtruj posty po aktualnie zalogowanym użytkowniku
+    posts = Post.objects.filter(
+        created_by=request.user
+    ).select_related('topic', 'topic__category', 'created_by')
+    
+    serializer = PostListSerializer(posts, many=True)
+    return Response(serializer.data)
+
+
+# ============================================================================
+# POST OPERATIONS WITH DIFFERENT AUTHENTICATION (LAB 6 - ZADANIE 4)
+# ============================================================================
+
+@api_view(['PUT'])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def post_update(request, pk):
+    """
+    Aktualizacja posta (PUT).
+    Wymaga uwierzytelnienia przez sesję lub Basic Auth.
+    
+    Endpoint: /api/posts/update/<pk>/
+    """
+    try:
+        post = Post.objects.select_related(
+            'topic', 'topic__category', 'created_by'
+        ).get(pk=pk)
+    except Post.DoesNotExist:
+        raise Http404
+    
+    serializer = PostSerializer(post, data=request.data, context={'request': request})
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def post_delete(request, pk):
+    """
+    Usunięcie posta (DELETE).
+    Wymaga uwierzytelnienia przez TOKEN.
+    
+    Endpoint: /api/posts/delete/<pk>/
+    Header: Authorization: Token <token_value>
+    """
+    try:
+        post = Post.objects.get(pk=pk)
+    except Post.DoesNotExist:
+        raise Http404
+    
+    post.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# ============================================================================
+# CATEGORY TOPICS VIEW (LAB 6 - ZADANIE 5)
+# ============================================================================
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def category_topics_list(request, category_id):
+    """
+    Zwraca listę wszystkich tematów (Topic) dla podanej kategorii.
+    Dostęp tylko do odczytu, wymaga uwierzytelnienia przez TOKEN.
+    
+    Endpoint: /api/categories/<category_id>/topics/
+    Header: Authorization: Token <token_value>
+    """
+    try:
+        category = Category.objects.get(pk=category_id)
+    except Category.DoesNotExist:
+        raise Http404
+    
+    # Pobierz wszystkie tematy dla danej kategorii
+    topics = Topic.objects.filter(category=category).select_related('category')
+    serializer = TopicSerializer(topics, many=True)
+    return Response(serializer.data)
