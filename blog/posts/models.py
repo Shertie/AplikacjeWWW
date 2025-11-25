@@ -53,13 +53,17 @@ class Post(models.Model):
     created_by = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='posts'
+        related_name='posts',
+        null=True
     )
     
     class Meta:
         verbose_name = "Post"
         verbose_name_plural = "Posts"
         ordering = ['-created_at']
+        permissions = [
+            ("can_edit_others_posts", "Can edit posts of other users"),
+        ]
     
     def __str__(self):
         # Pierwsze 5 wyrazów tekstu posta + '...' jeżeli dłuższy

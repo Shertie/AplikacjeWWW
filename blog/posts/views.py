@@ -10,10 +10,12 @@ from rest_framework import status
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from django.http import Http404
+from django.http import Http404, HttpResponse
+from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 
 from posts.models import Category, Topic, Post
+from posts.permissions import CustomDjangoModelPermissions, CanEditOthersPosts
 from posts.serializers import (
     CategorySerializer, 
     TopicSerializer, 
@@ -373,3 +375,74 @@ def category_topics_list(request, category_id):
     topics = Topic.objects.filter(category=category).select_related('category')
     serializer = TopicSerializer(topics, many=True)
     return Response(serializer.data)
+
+# ============================================================================
+# LAB 7 VIEWS
+# ============================================================================
+
+# Zadanie 2
+@api_view(['GET'])
+@authentication_classes([BasicAuthentication])
+def category_view(request, pk):
+    if not request.user.has_perm('posts.view_category'):
+        raise PermissionDenied()
+    try:
+        category = Category.objects.get(pk=pk)
+        return HttpResponse(f"Kategoria: {category.name}")
+    except Category.DoesNotExist:
+        return HttpResponse(f"Kategoria o id={pk} nie istnieje.")
+
+# Zadanie 4
+class CategoryDetailPermissionView(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated, CustomDjangoModelPermissions]
+    queryset = Category.objects.all() # Required for DjangoModelPermissions
+
+    def get_object(self, pk):
+        try:
+            return Category.objects.get(pk=pk)
+        except Category.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        category = self.get_object(pk)
+        serializer = CategorySerializer(category)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        category = self.get_object(pk)
+        serializer = CategorySerializer(category, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        category = self.get_object(pk)
+        category.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+# Zadanie 3
+class PostDetailModeratorView(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated, CanEditOthersPosts]
+
+    def get_object(self, pk):
+        try:
+            return Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        post = self.get_object(pk)
+        serializer = PostSerializer(post)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        post = self.get_object(pk)
+        self.check_object_permissions(request, post)
+        serializer = PostSerializer(post, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

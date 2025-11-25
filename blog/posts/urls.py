@@ -38,6 +38,19 @@ urlpatterns = [
     
     # Zadanie 5: Tematy dla danej kategorii (tylko token auth)
     path('categories/<int:category_id>/topics/', views.category_topics_list, name='category-topics'),
+
+    # ========================================================================
+    # LAB 7 - Permissions
+    # ========================================================================
+    
+    # Zadanie 2: Widok z ręcznym sprawdzaniem uprawnień
+    path('categories/<int:pk>/simple/', views.category_view, name='category-simple'),
+    
+    # Zadanie 3: Widok z custom permission
+    path('posts/<int:pk>/moderator/', views.PostDetailModeratorView.as_view(), name='post-moderator'),
+
+    # Zadanie 4: Widok z CustomDjangoModelPermissions
+    path('categories/<int:pk>/permissions/', views.CategoryDetailPermissionView.as_view(), name='category-permissions'),
 ]
 
 # Dodanie obsługi format suffixes (.json, .api, etc.)
