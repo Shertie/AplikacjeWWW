@@ -214,3 +214,4 @@ Do modelu `Posts` dodaj własne uprawnienie o nazwie `can_edit_others_posts`, um
 
 **Zadanie 4**  
 Przetestuj działanie klasy `DjangoModelPermissions` (lub `CustomDjangoModelPermissions`) z DRF z różnymi prawami dostępu (`GET`, `PUT`, `POST`, `DELETE`). Pamiętaj, że użytkownikowi, który nie jest superuserem należy przypisać stosowne prawa do modelu (poprzez przypisanie ich do grupy).
+

@@ -39,9 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',  # LAB 6 - Token authentication
+    'graphene_django',
     'debug_toolbar',
     'posts',
 ]
+
+GRAPHENE = {
+    "SCHEMA": "blog.schema.schema"
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
