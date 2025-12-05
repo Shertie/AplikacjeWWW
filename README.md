@@ -464,6 +464,7 @@ Projekt został rozbudowany o pełne API REST oraz interfejs GraphQL, implementu
 Dostępny pod adresem `/graphql/` (z włączonym interfejsem GraphiQL).
 
 Przykładowe zapytanie:
+
 ```graphql
 query {
   allWycieczki {
@@ -479,4 +480,3 @@ query {
   }
 }
 ```
-
