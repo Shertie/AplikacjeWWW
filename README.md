@@ -438,3 +438,45 @@ Projekt stworzony jako backend Django dla systemu zarządzania biurem podróży.
 ## 📝 Licencja
 
 Projekt edukacyjny.
+
+## 🌐 API REST & GraphQL
+
+Projekt został rozbudowany o pełne API REST oraz interfejs GraphQL, implementując wymagania z laboratoriów 4-8 w kontekście biura podróży.
+
+### Funkcjonalności API
+
+- **Pełny CRUD** dla wszystkich modeli (Kraj, LiniaLotnicza, Lot, Hotel, Wycieczka)
+- **Autentykacja:** Obsługa Basic Auth, Session Auth oraz Token Auth.
+- **Uprawnienia:** Dostęp do modyfikacji danych tylko dla zalogowanych użytkowników z odpowiednimi uprawnieniami (`DjangoModelPermissions`).
+- **Walidacja:** Zaawansowana walidacja danych (np. sprawdzanie dat lotów, zgodności kraju hotelu z krajem docelowym).
+- **GraphQL:** Pełny dostęp do danych poprzez zapytania GraphQL oraz mutacje (np. dodawanie krajów).
+
+### Endpointy REST
+
+- `/api/kraje/`
+- `/api/linie-lotnicze/`
+- `/api/loty/`
+- `/api/hotele/`
+- `/api/wycieczki/`
+
+### GraphQL
+
+Dostępny pod adresem `/graphql/` (z włączonym interfejsem GraphiQL).
+
+Przykładowe zapytanie:
+```graphql
+query {
+  allWycieczki {
+    nazwa
+    opis
+    krajDocelowy {
+      nazwa
+    }
+    hotel {
+      nazwa
+      kategoria
+    }
+  }
+}
+```
+
